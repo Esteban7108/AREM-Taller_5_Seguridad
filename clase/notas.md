@@ -18,6 +18,29 @@ Durante la sesión se aplicó la metodología de 5 pasos de la guía paso a paso
 ## 🧩 Boceto inicial del modelo
  
 > El DFD del flujo de procesamiento de pagos con terceros representa al estudiante como actor externo, la pasarela de pago externa fuera del límite de confianza, y dentro del backend de EdukIT el Módulo de Pagos (P1), el Módulo de Suscripciones (P2) y la BD de Transacciones (D1), conectados por los flujos de datos de pago, cobro, confirmación, resultado del cobro, registro y activación de acceso.
+
+
+```mermaid
+flowchart LR
+    estudiante(["Estudiante"])
+    pasarela["Pasarela de Pago (tercero)"]
+
+    subgraph backend["Backend EdukIT (límite de confianza)"]
+        pagos["P1: Módulo de Pagos"]
+        suscripciones["P2: Módulo de Suscripciones"]
+        db[("D1: BD de Transacciones")]
+    end
+
+    estudiante -->|"F1: solicita pago (HTTPS)"| pagos
+    pagos -->|"F2: cobra suscripción (API)"| pasarela
+    pasarela -.->|"F3: confirma pago (webhook/API)"| pagos
+    pagos -->|"F4: resultado del cobro"| suscripciones
+    suscripciones -->|"F5: registra/consulta (SQL)"| db
+    suscripciones -->|"F6: activación de acceso"| estudiante
+```
+
+Toda conexión que cruza el límite de confianza (F1, F2, F3) es un punto de análisis obligatorio.
+  
  
 ## 🔁 Tareas definidas para complementar el taller
  
